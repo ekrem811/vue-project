@@ -1,6 +1,9 @@
 <template>
   <div>
     <input type="file" @change="onFileChange" accept="video/*" />
+    <input id="range" type="range" min="1" max="30" v-model="fps" >
+    <label for="range">  FPS: {{ fps }}</label>
+    <span></span>
     <video ref="video" controls></video>
     <canvas ref="canvas" style="display: none;"></canvas>
     <div v-if="processedImage">
@@ -15,7 +18,8 @@ export default {
   data() {
     return {
       websocket: null,
-      processedImage: null
+      processedImage: null,
+      fps: 10
     };
   },
   methods: {
@@ -34,7 +38,6 @@ export default {
       const video = this.$refs.video;
       const canvas = this.$refs.canvas;
       const context = canvas.getContext('2d');
-      const fps = 10; // Change FPS as needed
 
 
       this.websocket = new WebSocket('ws://localhost:3000');
@@ -74,7 +77,7 @@ export default {
             reader.readAsArrayBuffer(blob);
           }
         }, 'image/jpeg');
-        setTimeout(streamFrames, 1000 / fps);
+        setTimeout(streamFrames, 1000 / this.fps);
       };
 
       video.addEventListener('play', () => {
